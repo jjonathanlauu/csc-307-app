@@ -34,14 +34,29 @@ const users = {
   ],
 };
 
-// Route to get all users
+// Helper function to find users by name
+const findUserByName = (name) => {
+  return users.users_list.filter((user) => user.name === name);
+};
+
+// Route to get all users or users by name
 app.get("/users", (req, res) => {
-  res.send(users);
-});
-app.get("/", (req, res) => {
-  res.send("Hello World!");
+  const name = req.query.name;
+  if (name != undefined) {
+    let result = findUserByName(name);
+    result = { users_list: result };
+    res.json(result);
+  } else {
+    res.json(users);
+  }
 });
 
+// Root route handler
+app.get("/", (req, res) => {
+  res.send("Hello World! Welcome to the Express server.");
+});
+
+// Start the server
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`);
 });
