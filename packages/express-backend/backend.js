@@ -35,25 +35,22 @@ const users = {
 };
 
 // Helper function to find users by name
-const findUserByName = (name) => {
-  return users.users_list.filter((user) => user.name === name);
-};
+const findUserById = (id) =>
+  users["users_list"].find((user) => user["id"] === id);
 
-// Route to get all users or users by name
-app.get("/users", (req, res) => {
-  const name = req.query.name;
-  if (name != undefined) {
-    let result = findUserByName(name);
-    result = { users_list: result };
-    res.json(result);
+app.get("/users/:id", (req, res) => {
+  const id = req.params["id"]; //or req.params.id
+  let result = findUserById(id);
+  if (result === undefined) {
+    res.status(404).send("Resource not found.");
   } else {
-    res.json(users);
+    res.send(result);
   }
 });
 
 // Root route handler
 app.get("/", (req, res) => {
-  res.send("Hello World! Welcome to the Express server.");
+  res.send("Hello World!");
 });
 
 // Start the server
