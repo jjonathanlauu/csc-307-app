@@ -13,7 +13,11 @@ function MyApp() {
   function updateList(person) {
     setCharacters([...characters, person]);
   }
-
+  function fetchUsers() {
+    const promise = fetch("http://localhost:8000/users");
+    return promise;
+  }
+  
   return (
     <div className="container">
       <Table characterData={characters} removeCharacter={removeOneCharacter} />
