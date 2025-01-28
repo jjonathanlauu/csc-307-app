@@ -6,28 +6,55 @@ function MyApp() {
   const [characters, setCharacters] = useState([]);
 
   function removeOneCharacter(index) {
-    const updated = characters.filter((character, i) => i !== index);
-    setCharacters(updated);
+    const user = characters[index];
+    if (!user || !user.id) {
+      console.error("Error: Invalid user or user ID");
+      return;
+    }
+    const updatedCharacters = characters.filter((_, i) => i !== index);
+    setCharacters(updatedCharacters);
+    fetch(`http://localhost:8000/users/${user.id}`, {
+      method: "DELETE",
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Failed to delete the user");
+        }
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+        setCharacters(characters);
+        alert("Failed to delete user. Please try again.");
+      });
   }
 
   function updateList(person) {
     postUser(person)
-      .then(() => setCharacters([...characters, person]))
+      .then((newUser) => {
+        setCharacters((prevCharacters) => [...prevCharacters, newUser]);
+      })
       .catch((error) => {
         console.log(error);
+        alert("User creation failed");
       });
   }
 
   function postUser(person) {
-    const promise = fetch("http://localhost:8000/users", {
+    return fetch("http://localhost:8000/users", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(person),
+    }).then((response) => {
+      if (response.status === 201) {
+        return response.json();
+      } else {
+        throw new Error(
+          `Failed to create user with status code: ${response.status}`
+        );
+      }
     });
-
-    return promise;
   }
 
   function fetchUsers() {

@@ -37,10 +37,14 @@ const users = {
     },
   ],
 };
+function generateId() {
+  return Math.random().toString(36).substring(2, 10);
+}
 
 const addUser = (user) => {
-  users.users_list.push(user);
-  return user;
+  const newUser = { ...user, id: generateId() };
+  users.users_list.push(newUser);
+  return newUser;
 };
 
 app.get("/users/:id", (req, res) => {
@@ -55,8 +59,8 @@ app.get("/users/:id", (req, res) => {
 
 app.post("/users", (req, res) => {
   const userToAdd = req.body;
-  addUser(userToAdd);
-  res.status(201).json(userToAdd);
+  const newUser = addUser(userToAdd);
+  res.status(201).json(newUser);
 });
 
 app.delete("/users/:id", (req, res) => {
@@ -66,7 +70,7 @@ app.delete("/users/:id", (req, res) => {
   if (users.users_list.length === initialLength) {
     res.status(404).send("User not found.");
   } else {
-    res.status(200).send("User deleted.");
+    res.status(204).send();
   }
 });
 
